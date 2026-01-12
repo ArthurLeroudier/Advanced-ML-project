@@ -31,8 +31,8 @@ class Bandit(n_experts, k_arms, t_steps):
         It = rd.multinomial(1,p)
 
         #estimated losses for arms
-        Lt = [self.loss(k,t) for k in range(K)]
-        Lt[It] = Lt[It]/p[It]
+        Lt = np.zeros(self.K)
+        Lt[It] =self.loss(It,t)/p[It]
 
         #estimated losses for experts
         yt = [np.dot(xi[n], Lt) for n in range(N)]/self.K
@@ -51,5 +51,5 @@ class Bandit(n_experts, k_arms, t_steps):
         for t in range(self.T):
             It, Y_cum, q = self.step_exp4(t, Y_cum, q)
             chosen_arms.append(It)
-            
+
         return(It, Y_cum, q)
