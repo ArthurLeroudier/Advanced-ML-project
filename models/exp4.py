@@ -14,6 +14,7 @@ class Bandit(n_experts, k_arms, t_steps):
         self.N = n_experts
         self.K = k_arms
         self.T = t_steps
+        self.chosen_arms = []
         self.eta = np.ones(self.T) #temperature parameter, default to ones
 
     def experts(self, data, t):
@@ -45,10 +46,9 @@ class Bandit(n_experts, k_arms, t_steps):
     def exp4(self):
         q = np.ones(self.K)/self.K #trust distribution for experts, starts as uniform
         Y_cum = np.zeros(self.K) #cumulative loss for experts
-        chosen_arms = []
 
         for t in range(self.T):
             It, Y_cum, q = self.step_exp4(t, Y_cum, q)
-            chosen_arms.append(It)
+            self.chosen_arms.append(It)
 
         return(chosen_arms, Y_cum, q)
