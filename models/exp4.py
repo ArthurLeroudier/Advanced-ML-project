@@ -14,19 +14,18 @@ class Bandit(n_experts, k_arms, t_steps):
         self.N = n_experts
         self.K = k_arms
         self.T = t_steps
-        self.experts = np.empty((self.T, self.N, self.K))
         self.eta = np.ones(self.T) #temperature parameter, default to ones
 
-    def experts(self, data):
-        #function to get expert advice, must set values in self.expert (T x K x N array)
-        #first dim is time, 2nd is expert at given time, 3rd is distribution over arms for given expert at given time
+    def experts(self, data, t):
+        #function to get expert advice at time t, must return expert array of size (N x K)
+        #first dim is expert at given time, 2nd is distribution over arms for given expert at given time
 
     def loss(self, k, t):
         #return l_kt loss for chosing the arm k at time t
 
-    def step_exp4(self, t, Y_cum, q):
+    def step_exp4(self, t, Y_cum, q, data):
         #q distribution over experts, represent how much we trust them
-        xi = self.experts()[t] #array N x K of experts advice on arms
+        xi = self.experts(t, data) #array N x K of experts advice on arms
         p = [np.dot(xi[:,k],q) for k in range(self.K)]/self.N #get a distribution over arms from advices xi weighted by trust q
         It = rd.multinomial(1,p)
 
@@ -52,4 +51,4 @@ class Bandit(n_experts, k_arms, t_steps):
             It, Y_cum, q = self.step_exp4(t, Y_cum, q)
             chosen_arms.append(It)
 
-        return(It, Y_cum, q)
+        return(chosen_arms, Y_cum, q)
