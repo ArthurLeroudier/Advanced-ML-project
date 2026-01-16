@@ -4,12 +4,13 @@ import numpy as np
 
 def load_data()
     list_df = []
-    path = os.getcwd() + "/data/csvfiles/"
+    path = os.getcwd() + "/csvfiles/"
     t = 0 #week number
     for file in os.listdir(path.replace("\\","/")):
         if file.startswith('tr'):
             new_df = pd.read_csv(path + file)[['SHOP_WEEK', 'QUANTITY', 'SPEND', 'PROD_CODE', 'STORE_CODE']]
-            new_df[['SHOP_WEEK']] = np.ones((1,len(new_df[['SHOP_WEEK']])))
+            new_df['SHOP_WEEK'] = np.ones(len(new_df[['SHOP_WEEK']]))*t
+            new_df['SHOP_WEEK'] = new_df['SHOP_WEEK'].astype(int)
             list_df.append(new_df)
             t+=1
     df = pd.concat(list_df,axis=0)
@@ -26,7 +27,6 @@ def load_data()
 
     #On prend le prix unitaire par transaction
     df_top['UNIT_PRICE'] = df_top['SPEND'] / df_top['QUANTITY'] 
-
     df_final = df_top.pivot_table(
         index=['SHOP_WEEK', 'STORE_CODE'],
         columns='PROD_CODE',
@@ -40,5 +40,8 @@ def load_data()
     df_final.bfill(inplace=True)
 
     #replace 'store_code' by store number
-    df_final[['STORE_CODE']].replace(pd.unique(df_final[['STORE_CODE']]),  np.arange(pd.unique(df_final[['STORE_CODE']])), inplace=True)
+    keys = pd.unique(df_final['STORE_CODE'])
+    values = np.arange(len(pd.unique(df_final['STORE_CODE'])))
+    df_final['STORE_CODE'].replace(keys, values, inplace=True)
+    df_final
     return df_final

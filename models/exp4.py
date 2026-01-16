@@ -6,7 +6,7 @@ from collections import Counter
 #experts n between 1 and N
 #steps t between 1 and T
 
-class Bandit(n_experts, k_arms, t_steps):
+class Bandit():
     def __init__(self,
                  n_experts,
                  k_arms,
@@ -19,6 +19,8 @@ class Bandit(n_experts, k_arms, t_steps):
         self.eta = np.ones(self.T) #temperature parameter, default to ones
         self.q = np.ones((self.T,self.K))/self.K #trust distribution for experts K at time T, starts as uniform
         self.loss_arms = np.zeros(self.T)
+        #basket components depends on the mean price of each product
+        self.basket = [2, 1 , 1, 1, 3, 5, 4]
 
     def experts(self, data, t):
         '''function to get expert advice at time t, must return expert array of size (N x K)
@@ -54,9 +56,18 @@ class Bandit(n_experts, k_arms, t_steps):
         expert[4] = np.ones(self.K) / self.K
 
 
-    def loss(self, k, t):
+    def loss(self, data, k, t):
         #return l_kt loss for chosing the arm k at time t
-        
+        data_t = data[data['SHOP_WEEK'] == t]
+
+        price_all_stores = np.array(data_t[['PRD0900173', 'PRD0900531', 'PRD0900679', 'PRD0901265', 'PRD0901878', 'PRD0902540', 'PRD0903052']])
+        price_all_baskets = np.dot(price_all_stores,self.basket)
+
+        price_k = price_all_baskets[k]
+        best_price = np.min(price_all_baskets)
+        loss = price_k - best_price
+        return loss
+
 
     def step_exp4(self, t, Y_cum, data):
         xi = self.experts(t, data) #array N x K of experts advice on arms
@@ -66,7 +77,7 @@ class Bandit(n_experts, k_arms, t_steps):
 
         #estimated losses for arms
         Lt = np.zeros(self.K)
-        Lt[It] =self.loss(It,t)/p[It]
+        Lt[It] =self.loss(data, It,t)/p[It]
         self.loss_arms[t] = Lt[It] 
         #estimated losses for experts
         yt = [np.dot(xi[n], Lt) for n in range(N)]/self.K
