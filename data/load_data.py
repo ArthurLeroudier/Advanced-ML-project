@@ -38,4 +38,7 @@ def load_data()
     #fill the NANs with forward method
     df_final.ffill(inplace=True)
     df_final.bfill(inplace=True)
+
+    #replace 'store_code' by store number
+    df_final[['STORE_CODE']].replace(pd.unique(df_final[['STORE_CODE']]),  np.arange(pd.unique(df_final[['STORE_CODE']])), inplace=True)
     return df_final

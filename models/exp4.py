@@ -24,7 +24,7 @@ class Bandit(n_experts, k_arms, t_steps):
         '''function to get expert advice at time t, must return expert array of size (N x K)
         first dim is expert at given time, 2nd is distribution over arms for given expert at given time'''
         expert = np.zeros((self.N, self.K))
-        #expert 0 advise uniformly the stores not visited yet (or uniform if all stores have been visited)
+        #expert 0 advises uniformly the stores not visited yet (or uniform if all stores have been visited)
         unknown = np.arange(self.K)
         for tau in range(len(self.chosen_arms)):
             unknown[self.chosen_arms[tau]] = 0
@@ -33,7 +33,7 @@ class Bandit(n_experts, k_arms, t_steps):
         else:
             expert[0] = np.ones(self.K) / self.K
 
-        #expert 1 advise the frequence each store has already been visited (or uniform at t=0)
+        #expert 1 advises the frequency each store has already been visited (or uniform at t=0)
         arms = np.arange(self.K)
         for tau in range(len(self.chosen_arms)):
             arms[self.chosen_arms[tau]] += 1
@@ -42,21 +42,21 @@ class Bandit(n_experts, k_arms, t_steps):
         else:
             expert[1] = np.ones(self.K) / self.K
 
-        #expert 2 advise according to advertisements for the price of an item of the basket
-        data[]
+        #expert 2 advises according to advertisements for the price of an item of the basket
+        prices = np.array(data[['SHOP_WEEK'] == t].groupby('STORE_CODE')['PRD0900173'])
+        expert[2] = prices/np.sum(prices)
 
-        #expert 3 for the store with smallest loss yet
+        #expert 3 advises for the store with smallest loss yet
         t_min = np.argmin(self.loss_arms)
         expert[3,self.chosen_arms[t_min]] = 1
 
-        #expert 4 at random (uniform distribution)
-        expert = np.ones(self.K) / self.K
-
-
+        #expert 4 advises at random (uniform distribution)
+        expert[4] = np.ones(self.K) / self.K
 
 
     def loss(self, k, t):
         #return l_kt loss for chosing the arm k at time t
+        
 
     def step_exp4(self, t, Y_cum, data):
         xi = self.experts(t, data) #array N x K of experts advice on arms
