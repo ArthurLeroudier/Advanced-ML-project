@@ -1,12 +1,17 @@
 import os
 import pandas as pd
+import numpy as np
 
 def load_data()
     list_df = []
     path = os.getcwd() + "/data/csvfiles/"
+    t = 0 #week number
     for file in os.listdir(path.replace("\\","/")):
         if file.startswith('tr'):
-            list_df.append(pd.read_csv(path + file)[['SHOP_WEEK', 'QUANTITY', 'SPEND', 'PROD_CODE', 'STORE_CODE']])
+            new_df = pd.read_csv(path + file)[['SHOP_WEEK', 'QUANTITY', 'SPEND', 'PROD_CODE', 'STORE_CODE']]
+            new_df[['SHOP_WEEK']] = np.ones((1,len(new_df[['SHOP_WEEK']])))
+            list_df.append(new_df)
+            t+=1
     df = pd.concat(list_df,axis=0)
     df = df[df['QUANTITY'] > 0].copy()
 
