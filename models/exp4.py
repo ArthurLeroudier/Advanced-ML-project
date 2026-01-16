@@ -83,7 +83,6 @@ class Bandit():
 
     def step_exp4(self, t, Y_cum, data):
         xi = self.experts(data, t) #array N x K of experts advice on arms
-        print(xi)
         p = [np.dot(xi[:,k], self.q[t]) for k in range(self.K)] #get a distribution over arms from advices xi weighted by trust q
         #choose an arm according to p
         It = rd.choice(a = np.arange(self.K), p = p)
