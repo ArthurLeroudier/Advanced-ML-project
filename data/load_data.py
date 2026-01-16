@@ -2,9 +2,8 @@ import os
 import pandas as pd
 import numpy as np
 
-def load_data()
+def load_data(path= os.getcwd() + "/data/csvfiles/"):
     list_df = []
-    path = os.getcwd() + "/csvfiles/"
     t = 0 #week number
     for file in os.listdir(path.replace("\\","/")):
         if file.startswith('tr'):
@@ -43,5 +42,4 @@ def load_data()
     keys = pd.unique(df_final['STORE_CODE'])
     values = np.arange(len(pd.unique(df_final['STORE_CODE'])))
     df_final['STORE_CODE'].replace(keys, values, inplace=True)
-    df_final
     return df_final
